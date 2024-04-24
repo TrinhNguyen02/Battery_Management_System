@@ -464,44 +464,7 @@ void StartDefaultTask(void const * argument)
 
   for(;;)
   {
-	  HAL_ADC_Start_DMA(&hadc1, ADC_Value, 4);
-	  for(int i = 0; i < 4; i++){
-		  initBff(charValue_1, MAX_LENGTH_BFF);
-		  scaleValue[i] = (float)ADC_Value[i]*3.3/4096;
-	  }
 
-	  gcvt(scaleValue[0], MAX_LENGTH_BFF, charValue_1);
-	  gcvt(scaleValue[1], MAX_LENGTH_BFF, charValue_2);
-	  gcvt(scaleValue[2], MAX_LENGTH_BFF, charValue_3);
-	  gcvt(scaleValue[3], MAX_LENGTH_BFF, charValue_4);
-
-	  msg2SSD1306(" 2S battery ", 0, 0);
-	  msg2SSD1306(" % ", 14, 0);
-
-	  msg2SSD1306("Vol Cell 1: ", 0, 1);
-	  msg2SSD1306("        ", 12, 1);
-	  msg2SSD1306(charValue_1, 12, 1);
-	  msg2SSD1306(" v", 16, 1);
-
-	  msg2SSD1306("Vol Cell 2: ", 0, 2);
-	  msg2SSD1306("        ", 12, 2);
-	  msg2SSD1306(charValue_2, 12, 2);
-	  msg2SSD1306(" v", 16, 2);
-
-	  msg2SSD1306("current : ", 0, 3);
-	  msg2SSD1306("        ", 9, 3);
-	  msg2SSD1306(charValue_3, 10, 3);
-	  msg2SSD1306("mA", 16, 3);
-
-	  msg2SSD1306("temperture: ", 0, 4);
-	  msg2SSD1306("     ", 12, 4);
-	  msg2SSD1306(charValue_4, 12, 4);
-	  msg2SSD1306("*C", 16, 4);
-
-
-	  ssd1306_UpdateScreen();
-
-    osDelay(50);
   }
   /* USER CODE END 5 */
 }
@@ -519,7 +482,6 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-
     osDelay(10);
   }
   /* USER CODE END StartTask02 */
