@@ -1,0 +1,8 @@
+../Core/Src/main.c:448:6:StartTask02	1
+../Core/Src/main.c:467:6:StartTask03	1
+../Core/Src/main.c:183:6:SystemClock_Config	4
+../Core/Src/main.c:93:5:main	7
+../Core/Src/main.c:369:6:initBff	1
+../Core/Src/main.c:392:6:StartDefaultTask	2
+../Core/Src/main.c:375:6:cleanBff	3
+../Core/Src/main.c:482:6:Error_Handler	1
