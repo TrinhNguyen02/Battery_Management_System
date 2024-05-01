@@ -37,6 +37,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define MAX_LENGTH_BFF 4
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -58,8 +59,22 @@ osThreadId display_TaskHandle;
 osThreadId ctrlBMS_TaskHandle;
 osThreadId comUART_TaskHandle;
 osMessageQId myQueue01Handle;
+osMessageQId myQueue02Handle;
 /* USER CODE BEGIN PV */
 
+int i = 0;
+float x;
+char xBff[MAX_LENGTH_BFF];
+float scaleValue[4];
+uint32_t ADC_Value[4];
+
+float ratio_VSS = 0.1885964912;
+float ratio_VSI = 0.5;
+
+char charValue_1[MAX_LENGTH_BFF];
+char charValue_2[MAX_LENGTH_BFF];
+char charValue_3[MAX_LENGTH_BFF];
+char charValue_4[MAX_LENGTH_BFF];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -136,8 +151,12 @@ int main(void)
 
   /* Create the queue(s) */
   /* definition and creation of myQueue01 */
-  osMessageQDef(myQueue01, 16, uint16_t);
+  osMessageQDef(myQueue01, 16, uint32_t);
   myQueue01Handle = osMessageCreate(osMessageQ(myQueue01), NULL);
+
+  /* definition and creation of myQueue02 */
+  osMessageQDef(myQueue02, 16, uint16_t);
+  myQueue02Handle = osMessageCreate(osMessageQ(myQueue02), NULL);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -262,7 +281,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_13CYCLES_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -447,7 +466,20 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void initBff(char* bff, int len){
+	for(int i = 0; i < len; i++){
+		*bff = '\0';
+		bff++;
+	}
+}
+void cleanBff(char* bff, int len){
+	for(int i = 0; i < len; i++){
+		if(*bff == '\0'){
+			*bff = ' ';
+		}
+		bff++;
+	}
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -462,9 +494,12 @@ void StartDefaultTask(void const * argument)
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
 
+
   for(;;)
   {
-
+	  HAL_ADC_Start_DMA(&hadc1, ADC_Value, 4);
+	  xQueueSend(myQueue01Handle, &ADC_Value, portMAX_DELAY);
+	  osDelay(200);
   }
   /* USER CODE END 5 */
 }
@@ -480,9 +515,30 @@ void StartTask02(void const * argument)
 {
   /* USER CODE BEGIN StartTask02 */
   /* Infinite loop */
+//	uint32_t ADC_Value[4];
+
   for(;;)
   {
-    osDelay(10);
+	  if(xQueueReceive(myQueue01Handle, &ADC_Value, portMAX_DELAY) == pdPASS){
+		  for(int i = 0; i < 4; i++){
+//			  scaleValue[i] = (float)(0.1966808511 + 0.9510638298*ADC_Value[i]*3.3/4040);
+			  scaleValue[i] = (float)(ADC_Value[i]*3.3/4040);
+		  }
+
+		  initBff(charValue_1, MAX_LENGTH_BFF);
+		  initBff(charValue_2, MAX_LENGTH_BFF);
+		  initBff(charValue_3, MAX_LENGTH_BFF);
+		  initBff(charValue_4, MAX_LENGTH_BFF);
+
+		  gcvt((float)(scaleValue[0]/ratio_VSS), MAX_LENGTH_BFF, charValue_1);
+		  gcvt((float)(scaleValue[1]/ratio_VSI), MAX_LENGTH_BFF, charValue_2);
+		  gcvt(scaleValue[2], MAX_LENGTH_BFF, charValue_3);
+		  gcvt(scaleValue[3], MAX_LENGTH_BFF, charValue_4);
+
+		  displayOLED("21", charValue_1, charValue_2, charValue_3, charValue_4);
+		  xQueueReset(myQueue01Handle);
+	  }
+		osDelay(10);
   }
   /* USER CODE END StartTask02 */
 }

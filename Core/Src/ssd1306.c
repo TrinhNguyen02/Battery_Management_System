@@ -563,3 +563,35 @@ void msg2SSD1306(char* msg, uint8_t x, uint8_t y){
 	ssd1306_SetCursor(x*7, y*10);
 	ssd1306_WriteString(msg, Font_7x10, White);
 }
+
+
+void displayOLED(char percent[], char vol_1[], char vol_2[], char curr[], char tempt[]){
+	  ssd1306_Fill(Black);
+
+	  msg2SSD1306(" 2S battery ", 0, 0);
+	  msg2SSD1306(percent, 12, 0);
+	  msg2SSD1306(" % ", 14, 0);
+
+	  msg2SSD1306("Vol Cell 1: ", 0, 1);
+	  msg2SSD1306("        ", 12, 1);
+	  msg2SSD1306(vol_1, 12, 1);
+	  msg2SSD1306(" v", 16, 1);
+
+	  msg2SSD1306("Vol Cell 2: ", 0, 2);
+	  msg2SSD1306("        ", 12, 2);
+	  msg2SSD1306(vol_2, 12, 2);
+	  msg2SSD1306(" v", 16, 2);
+
+	  msg2SSD1306("current : ", 0, 3);
+	  msg2SSD1306("        ", 9, 3);
+	  msg2SSD1306(curr, 10, 3);
+	  msg2SSD1306("mA", 16, 3);
+
+	  msg2SSD1306("temperture: ", 0, 4);
+	  msg2SSD1306("     ", 12, 4);
+	  msg2SSD1306(tempt, 12, 4);
+	  msg2SSD1306("*C", 16, 4);
+
+	  ssd1306_UpdateScreen();
+
+}

@@ -22,3 +22,4 @@
 ../Core/Src/ssd1306.c:73:6:ssd1306_Init	1
 ../Core/Src/ssd1306.c:559:9:ssd1306_GetDisplayOn	1
 ../Core/Src/ssd1306.c:562:6:msg2SSD1306	1
+../Core/Src/ssd1306.c:568:6:displayOLED	1
